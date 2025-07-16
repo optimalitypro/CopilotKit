@@ -1,0 +1,35 @@
+{
+  "name": "copilotkit-test",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@copilotkit/react-core": "file:../CopilotKit/packages/react-core/copilotkit-react-core-1.9.2-next.9.tgz",
+    "@copilotkit/react-textarea": "file:../CopilotKit/packages/react-textarea/copilotkit-react-textarea-1.9.2-next.9.tgz",
+    "@copilotkit/react-ui": "file:../CopilotKit/packages/react-ui/copilotkit-react-ui-1.9.2-next.9.tgz",
+    "@copilotkit/runtime": "file:../CopilotKit/packages/runtime/copilotkit-runtime-1.9.2-next.9.tgz",
+    "@copilotkit/runtime-client-gql": "file:../CopilotKit/packages/runtime-client-gql/copilotkit-runtime-client-gql-1.9.2-next.9.tgz",
+    "@copilotkit/shared": "file:../CopilotKit/packages/shared/copilotkit-shared-1.9.2-next.9.tgz",
+    "next": "15.4.1",
+    "openai": "^5.9.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-markdown": "^10.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
