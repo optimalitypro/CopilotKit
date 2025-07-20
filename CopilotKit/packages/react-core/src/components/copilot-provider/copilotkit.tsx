@@ -50,6 +50,12 @@ import {
   LangGraphInterruptActionSetterArgs,
 } from "../../types/interrupt-action";
 import { StatusChecker } from "../../lib/status-checker";
+import {
+  ConversationState,
+  ConversationMethods,
+  ConversationChangeProps,
+} from "../../types/conversation";
+import { ConversationService, createConversationService } from "../../services/conversation-service";
 
 export function CopilotKit({ children, ...props }: CopilotKitProps) {
   const showDevConsole = props.showDevConsole ?? false;
@@ -98,6 +104,171 @@ export function CopilotKitInternal(cpkProps: CopilotKitProps) {
   } = useFlatCategoryStore<DocumentPointer>();
 
   const statusChecker = useMemo(() => new StatusChecker(), []);
+
+  // Conversation state management
+  const [conversationState, setConversationState] = useState<ConversationState>({
+    conversations: [],
+    isLoading: false,
+    initialized: false,
+  });
+
+  // Create conversation service if config is provided
+  const conversationService = useMemo(() => {
+    if (props.conversationConfig) {
+      return createConversationService({
+        ...props.conversationConfig,
+        autoSave: props.autoSaveMessages ?? true,
+      });
+    }
+    return null;
+  }, [props.conversationConfig, props.autoSaveMessages]);
+
+  // Conversation methods
+  const conversationMethods: ConversationMethods = useMemo(() => ({
+    loadConversations: async () => {
+      if (!conversationService) return;
+      
+      setConversationState(prev => ({ ...prev, isLoading: true, error: undefined }));
+      try {
+        const conversations = await conversationService.getConversations();
+        setConversationState(prev => ({
+          ...prev,
+          conversations,
+          isLoading: false,
+          initialized: true,
+        }));
+      } catch (error) {
+        console.error('Failed to load conversations:', error);
+        setConversationState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'Failed to load conversations',
+        }));
+      }
+    },
+
+    loadConversation: async (conversationId: string) => {
+      if (!conversationService) return;
+      
+      const previousConversationId = conversationState.currentConversationId;
+      setConversationState(prev => ({ 
+        ...prev, 
+        currentConversationId: conversationId,
+        isLoading: true,
+        error: undefined 
+      }));
+
+      try {
+        const messages = await conversationService.getConversationMessages(conversationId);
+        
+        // Find the conversation object
+        const conversation = conversationState.conversations.find(c => c.id === conversationId);
+        
+        // Call the onConversationChange callback if provided
+        if (props.onConversationChange) {
+          props.onConversationChange({
+            conversationId,
+            conversation,
+            previousConversationId,
+          });
+        }
+
+        setConversationState(prev => ({ ...prev, isLoading: false }));
+        
+        // Return messages for the CopilotMessages component to handle
+        return messages;
+      } catch (error) {
+        console.error('Failed to load conversation:', error);
+        setConversationState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'Failed to load conversation',
+        }));
+        throw error;
+      }
+    },
+
+    createConversation: async (title?: string) => {
+      if (!conversationService) return '';
+      
+      setConversationState(prev => ({ ...prev, isLoading: true, error: undefined }));
+      try {
+        const conversationId = await conversationService.createConversation(title);
+        
+        // Refresh conversations list
+        await conversationMethods.loadConversations();
+        
+        setConversationState(prev => ({ ...prev, isLoading: false }));
+        return conversationId;
+      } catch (error) {
+        console.error('Failed to create conversation:', error);
+        setConversationState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'Failed to create conversation',
+        }));
+        throw error;
+      }
+    },
+
+    deleteConversation: async (conversationId: string) => {
+      if (!conversationService) return;
+      
+      setConversationState(prev => ({ ...prev, isLoading: true, error: undefined }));
+      try {
+        await conversationService.deleteConversation(conversationId);
+        
+        // Remove from local state
+        setConversationState(prev => ({
+          ...prev,
+          conversations: prev.conversations.filter(c => c.id !== conversationId),
+          currentConversationId: prev.currentConversationId === conversationId ? undefined : prev.currentConversationId,
+          isLoading: false,
+        }));
+      } catch (error) {
+        console.error('Failed to delete conversation:', error);
+        setConversationState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: error instanceof Error ? error.message : 'Failed to delete conversation',
+        }));
+        throw error;
+      }
+    },
+
+    setCurrentConversation: (conversationId?: string) => {
+      const previousConversationId = conversationState.currentConversationId;
+      setConversationState(prev => ({ ...prev, currentConversationId: conversationId }));
+      
+      if (props.onConversationChange && conversationId !== previousConversationId) {
+        const conversation = conversationState.conversations.find(c => c.id === conversationId);
+        props.onConversationChange({
+          conversationId,
+          conversation,
+          previousConversationId,
+        });
+      }
+    },
+
+    saveMessage: async (message: any) => {
+      if (!conversationService || !conversationState.currentConversationId) return;
+      
+      try {
+        await conversationService.saveMessage(message, conversationState.currentConversationId);
+      } catch (error) {
+        console.error('Failed to save message:', error);
+        // Don't throw error for save failures to avoid disrupting chat flow
+      }
+    },
+
+    clearError: () => {
+      setConversationState(prev => ({ ...prev, error: undefined }));
+    },
+
+    refreshConversations: async () => {
+      await conversationMethods.loadConversations();
+    },
+  }), [conversationService, conversationState, props.onConversationChange]);
 
   const [usageBannerStatus, setUsageBannerStatus] = useState<any>(null);
 
@@ -441,6 +612,11 @@ export function CopilotKitInternal(cpkProps: CopilotKitProps) {
         langGraphInterruptAction,
         setLangGraphInterruptAction,
         removeLangGraphInterruptAction,
+        conversationConfig: props.conversationConfig,
+        conversationState,
+        setConversationState,
+        conversationMethods,
+        onConversationChange: props.onConversationChange,
         onTrace: props.onTrace,
       }}
     >

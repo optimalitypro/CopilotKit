@@ -1,0 +1,194 @@
+/* Conversation Components */
+.copilotkit-conversation-history-button {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: inherit;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.copilotkit-conversation-history-button:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.copilotkit-conversation-history-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.copilotkit-conversation-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    max-width: 400px;
+    width: 100%;
+}
+
+.copilotkit-conversation-search {
+    margin-bottom: 12px;
+}
+
+.copilotkit-conversation-search-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.copilotkit-conversation-search-input:focus {
+    border-color: #3b82f6;
+}
+
+.copilotkit-conversation-create-button {
+    width: 100%;
+    padding: 10px 16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.copilotkit-conversation-create-button:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+
+.copilotkit-conversation-create-button:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.copilotkit-conversation-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.copilotkit-conversation-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+.copilotkit-conversation-item:hover {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.copilotkit-conversation-item.active {
+    background-color: #eff6ff;
+    border-color: #3b82f6;
+}
+
+.copilotkit-conversation-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.copilotkit-conversation-title {
+    font-weight: 500;
+    font-size: 14px;
+    color: #111827;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.copilotkit-conversation-preview {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.copilotkit-conversation-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.copilotkit-conversation-count {
+    padding: 2px 6px;
+    background-color: #f3f4f6;
+    border-radius: 3px;
+    font-size: 10px;
+}
+
+.copilotkit-conversation-delete {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+    margin-left: 8px;
+}
+
+.copilotkit-conversation-delete:hover {
+    background-color: #fef2f2;
+}
+
+.copilotkit-conversation-loading,
+.copilotkit-conversation-empty {
+    text-align: center;
+    padding: 20px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.copilotkit-conversation-error {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 12px;
+    color: #dc2626;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.copilotkit-conversation-retry {
+    background: none;
+    border: 1px solid #dc2626;
+    color: #dc2626;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.copilotkit-conversation-retry:hover {
+    background-color: #dc2626;
+    color: white;
+}

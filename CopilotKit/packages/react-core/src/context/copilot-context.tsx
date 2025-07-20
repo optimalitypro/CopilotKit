@@ -14,12 +14,20 @@ import {
   CopilotRuntimeClient,
   ExtensionsInput,
   ForwardedParametersInput,
+  Message,
 } from "@copilotkit/runtime-client-gql";
 import { Agent } from "@copilotkit/runtime-client-gql";
 import {
   LangGraphInterruptAction,
   LangGraphInterruptActionSetter,
 } from "../types/interrupt-action";
+import {
+  ConversationConfig,
+  Conversation,
+  ConversationState,
+  ConversationMethods,
+  ConversationChangeCallback,
+} from "../types/conversation";
 
 /**
  * Interface for the configuration of the Copilot API.
@@ -219,6 +227,13 @@ export interface CopilotContextParams {
   setLangGraphInterruptAction: LangGraphInterruptActionSetter;
   removeLangGraphInterruptAction: () => void;
 
+  // conversation management
+  conversationConfig?: ConversationConfig;
+  conversationState: ConversationState;
+  setConversationState: React.Dispatch<React.SetStateAction<ConversationState>>;
+  conversationMethods: ConversationMethods;
+  onConversationChange?: ConversationChangeCallback;
+
   /**
    * Optional trace handler for comprehensive debugging and observability.
    */
@@ -293,6 +308,25 @@ const emptyCopilotContext: CopilotContextParams = {
   langGraphInterruptAction: null,
   setLangGraphInterruptAction: () => null,
   removeLangGraphInterruptAction: () => null,
+  
+  // conversation management
+  conversationState: {
+    conversations: [],
+    isLoading: false,
+    initialized: false,
+  },
+  setConversationState: () => {},
+  conversationMethods: {
+    loadConversations: async () => {},
+    loadConversation: async () => undefined,
+    createConversation: async () => "",
+    deleteConversation: async () => {},
+    setCurrentConversation: () => {},
+    saveMessage: async () => {},
+    clearError: () => {},
+    refreshConversations: async () => {},
+  },
+  
   onTrace: undefined,
 };
 

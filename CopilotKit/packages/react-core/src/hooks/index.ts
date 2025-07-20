@@ -8,9 +8,18 @@ export { useMakeCopilotDocumentReadable } from "./use-make-copilot-document-read
 export { type UseChatHelpers } from "./use-chat";
 export { useCopilotReadable } from "./use-copilot-readable";
 export { useCoAgent, type HintFunction, runAgent, startAgent, stopAgent } from "./use-coagent";
+export {
+    useCopilotConversation,
+    useCopilotConversationHistory,
+    useCopilotCurrentConversation,
+    useCopilotConversationActions,
+    useCopilotConversationSearch
+} from "./use-copilot-conversation";
 export { useCopilotRuntimeClient } from "./use-copilot-runtime-client";
 export { useCopilotAuthenticatedAction_c } from "./use-copilot-authenticated-action";
 export { useLangGraphInterrupt } from "./use-langgraph-interrupt";
 export { useLangGraphInterruptRender } from "./use-langgraph-interrupt-render";
 export { useCopilotAdditionalInstructions } from "./use-copilot-additional-instructions";
 export type { Tree, TreeNode } from "./use-tree";
+
+

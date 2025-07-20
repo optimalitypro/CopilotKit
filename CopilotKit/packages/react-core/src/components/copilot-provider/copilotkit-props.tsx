@@ -2,6 +2,7 @@ import { ForwardedParametersInput } from "@copilotkit/runtime-client-gql";
 import { ReactNode } from "react";
 import { AuthState } from "../../context/copilot-context";
 import { CopilotTraceHandler } from "@copilotkit/shared";
+import { ConversationConfig, ConversationChangeCallback } from "../../types/conversation";
 /**
  * Props for CopilotKit.
  */
@@ -115,6 +116,32 @@ export interface CopilotKitProps {
    * The thread id to use for the CopilotKit.
    */
   threadId?: string;
+
+  /**
+   * Configuration for conversation management.
+   * When provided, enables conversation history features including:
+   * - Loading and displaying previous conversations
+   * - Switching between conversations
+   * - Creating new conversations
+   * - Deleting conversations
+   * - Automatic message persistence
+   */
+  conversationConfig?: ConversationConfig;
+
+  /**
+   * Callback function called when the current conversation changes.
+   * This is useful for tracking conversation switches and updating UI state.
+   * 
+   * @param props - Object containing conversation change details
+   */
+  onConversationChange?: ConversationChangeCallback;
+
+  /**
+   * Whether to automatically save messages to the conversation backend.
+   * Only applies when conversationConfig is provided.
+   * @default true
+   */
+  autoSaveMessages?: boolean;
 
   /**
    * Optional trace handler for comprehensive debugging and observability.

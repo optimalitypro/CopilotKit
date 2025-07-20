@@ -75,7 +75,7 @@ export function CopilotMessages({ children }: { children: ReactNode }) {
   const lastLoadedAgentName = useRef<string>();
   const lastLoadedMessages = useRef<string>();
 
-  const { threadId, agentSession, runtimeClient, showDevConsole, onTrace, copilotApiConfig } =
+  const { threadId, agentSession, runtimeClient, showDevConsole, onTrace, copilotApiConfig, conversationState, conversationMethods } =
     useCopilotContext();
   const { setBannerError } = useToast();
 
@@ -244,6 +244,44 @@ export function CopilotMessages({ children }: { children: ReactNode }) {
     };
     void fetchMessages();
   }, [threadId, agentSession?.agentName, runtimeClient]); // handleGraphQLErrors should NOT be in deps - causes infinite loop
+
+  // Handle conversation message loading
+  useEffect(() => {
+    if (!conversationState.currentConversationId || !conversationMethods.loadConversation) {
+      return;
+    }
+
+    const loadConversationMessages = async () => {
+      try {
+        const messages = await conversationMethods.loadConversation(conversationState.currentConversationId!);
+        if (messages) {
+          setMessages(messages);
+        }
+      } catch (error) {
+        console.error('Failed to load conversation messages:', error);
+        handleGraphQLErrors(error);
+      }
+    };
+
+    loadConversationMessages();
+  }, [conversationState.currentConversationId, conversationMethods.loadConversation, handleGraphQLErrors]);
+
+  // Auto-save messages when they change (if conversation is active)
+  useEffect(() => {
+    if (!conversationState.currentConversationId || !conversationMethods.saveMessage || messages.length === 0) {
+      return;
+    }
+
+    // Get the latest message
+    const latestMessage = messages[messages.length - 1];
+    if (latestMessage) {
+      // Save the message asynchronously without blocking the UI
+      conversationMethods.saveMessage(latestMessage).catch(error => {
+        console.warn('Failed to auto-save message:', error);
+        // Don't show error to user for auto-save failures
+      });
+    }
+  }, [messages, conversationState.currentConversationId, conversationMethods.saveMessage]);
 
   const memoizedChildren = useMemo(() => children, [children]);
 
